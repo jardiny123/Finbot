@@ -5,10 +5,11 @@ Unauthorized copying of this file, via any medium is strictly prohibited
 Written by Ryan Lee <strike77@gmail.com>
 Created in 13/03/2016 SDG
 '''
-
 import pymongo
 
+
 class MongoDBConnect(object):
+
     connection = None
     db = None
     collection = None
