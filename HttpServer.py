@@ -10,6 +10,7 @@ import MongoDBConnect
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import threading
 import json, ast
+import socket
 
 
 PORT_NUMBER = 8080
@@ -29,41 +30,47 @@ class ServiceHandler(BaseHTTPRequestHandler):
             self.send_header('Content-type','text/html')
             self.end_headers()
 
-            result = self.searchDatabase('20151230', '20160226')
+            # send query to DB
+            result = self.searchDatabase('20151120', '20151230')
             totalCount = len(result)
             count = 0
 
             # Create response in json format
-            returnValue = '{\n'
+            returnValue = '[\n'
             for item in result:
                 # Retrieves data from list
-                companyName = item['name']
-                shortCode = item['shortCode']
-                startPrice = item['startPrice']
-                endPrice = item['endPrice']
-                rate = item['rate']
-                weekData = item['week']
+                companyName = item["name"]
+                shortCode = item["shortCode"]
+                startPrice = item["startPrice"]
+                endPrice = item["endPrice"]
+                rate = item["rate"]
+                weekData = item["week"]
+
+                weekData = weekData.replace("'", "\"")
+                weekData = weekData.replace(": ", ":\"")
+                weekData = weekData.replace(",", "\",")
+                weekData = weekData.replace("}", "\"}")
 
                 # Create json message
                 returnValue += '\t{\n'
 
                 if(companyName):
-                    returnValue += "\t\t\'company\': " + companyName + "\n"
+                    returnValue += "\t\t\"company\":\"" + companyName + "\",\n"
 
                 if(shortCode):
-                    returnValue += "\t\t\'short_code\': " + shortCode + "\n"
+                    returnValue += "\t\t\"short_code\":\"" + shortCode + "\",\n"
 
                 if(startPrice):
-                    returnValue += "\t\t\'start_price\': " + startPrice + "\n"
+                    returnValue += "\t\t\"start_price\":\"" + startPrice + "\",\n"
 
                 if(endPrice):
-                    returnValue += "\t\t\'end_price\': " + endPrice + "\n"
+                    returnValue += "\t\t\"end_price\":\"" + endPrice + "\",\n"
 
                 if(rate):
-                    returnValue += "\t\t\'rate\': " + rate + "\n"
+                    returnValue += "\t\t\"rate\":\"" + rate + "\",\n"
 
                 if(weekData):
-                    returnValue += "\t\t\'week\': " +weekData + "\n"
+                    returnValue += "\t\t\"week\":" + weekData + "\n"
 
                 if(count < totalCount-1):
                     returnValue += '\t},\n'
@@ -72,7 +79,7 @@ class ServiceHandler(BaseHTTPRequestHandler):
 
                 count += 1;
 
-            returnValue += '}'
+            returnValue += ']'
 
             print returnValue
 
@@ -133,9 +140,9 @@ class ServiceHandler(BaseHTTPRequestHandler):
                     for value in result:
                         try:
                             # Get start and end date
-                            start = value.get('week').get(startDate)
-                            end = value.get('week').get(endDate)
-                            companyName = value.get('company_name')
+                            start = value.get("week").get(startDate)
+                            end = value.get("week").get(endDate)
+                            companyName = value.get("company_name")
                             delta = 1.0
 
                             if((start != None and end != None) and end > start):
@@ -150,17 +157,17 @@ class ServiceHandler(BaseHTTPRequestHandler):
                                     print("[%d] %s, %s, start: %d, end: %d, delta: %s" % (index, companyName, shortCode, start, end, rate))
 
                                     # Fill in the dictionary
-                                    company['name'] = companyName.encode('utf-8')
-                                    company['shortCode'] = str(shortCode)
-                                    company['startPrice'] = str(start)
-                                    company['endPrice'] = str(end)
-                                    company['rate'] = rate
+                                    company["name"] = companyName.encode('utf-8')
+                                    company["shortCode"] = str(shortCode)
+                                    company["startPrice"] = str(start)
+                                    company["endPrice"] = str(end)
+                                    company["rate"] = rate
 
-                                    weekValue = value.get('week')
+                                    weekValue = value.get("week")
 
                                     # Remove 'u' string in front of key
                                     weekValue = ast.literal_eval(json.dumps(weekValue))
-                                    company['week'] = str(weekValue)
+                                    company["week"] = str(weekValue)
 
                                     # fill in the list
                                     resultList.append(company)
@@ -180,7 +187,10 @@ class MyHttpServer(threading.Thread):
         try:
             # Create a web server and define the handler to manage the incoming request
             self.server = HTTPServer(('', PORT_NUMBER), ServiceHandler)
-            print("Started http server on port: %d" % PORT_NUMBER)
+
+            serverAddress = socket.gethostbyname(socket.gethostname())
+
+            print("Started http server on %s:%d" % (serverAddress, PORT_NUMBER))
 
             # Wait forever for incoming http requests
             self.server.serve_forever()

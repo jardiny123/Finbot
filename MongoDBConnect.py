@@ -83,8 +83,8 @@ class MongoDBConnect(object):
 
     def findData(self, shortCode):
         return self.collection.find(
-            {'short_code' : shortCode},
-            {'_id':0}
+            {"short_code" : shortCode},
+            {"_id":0}
         )
     #def end
 #class end
