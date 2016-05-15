@@ -6,135 +6,182 @@ Written by Ryan Lee <strike77@gmail.com>
 Created in 13/03/2016 SDG
 '''
 
-import plotly
-print plotly.__version__  # version >1.9.4 required
-from plotly.graph_objs import Scatter, Layout
-import MongoDBConnect
-import json, ast
-from datetime import datetime
+import sys
+#import plotly
+# import plotly.plotly as py
+# print plotly.__version__  # version >1.9.4 required
+# from plotly.graph_objs import Scatter, Layout
+#import plotly.graph_objs as go
 
-import HttpServer
+from PyQt4 import QtGui, QtCore
+from PyQt4 import uic
+from CustomWidget import QCustomQWidget
+from DataManager import DataHandler
+
+class MainWindow(QtGui.QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+        self.ui = uic.loadUi("StackedWidetForm.ui")
+        self.ui.backButton.hide()
+        self.ui.homeButton.hide()
+
+        self.ui.searchButton.clicked.connect(self.onSearchButtonClicked)
+
+        self.ui.listWidget.itemClicked.connect(self.onItemSelected)
+
+        # self.ui.next_2.clicked.connect(self.onNextButtonClicked)
+        # self.ui.next_3.clicked.connect(self.onNextButtonClicked)
+        #
+        # self.ui.back_2.clicked.connect(self.onBackButtonClicked)
+        # self.ui.back_3.clicked.connect(self.onBackButtonClicked)
+        # self.ui.back_4.clicked.connect(self.onBackButtonClicked)
+        #
+        # self.ui.home_2.clicked.connect(self.onHomeButtonClicked)
+        # self.ui.home_3.clicked.connect(self.onHomeButtonClicked)
+        # self.ui.home_4.clicked.connect(self.onHomeButtonClicked)
+
+        self.ui.stackedWidget.setCurrentIndex(0)
+        self.ui.show()
+
+    def onSearchButtonClicked(self):
+        print "onSearchButtonClicked"
+        print self.ui.textEdit.toPlainText()
+        nextIndex = self.ui.stackedWidget.currentIndex() + 1
+        self.ui.stackedWidget.setCurrentIndex(nextIndex)
+        self.ui.backButton.show()
+        self.ui.homeButton.show()
+
+        # Retrieve stock information from DB
+        dataHandler = DataHandler()
+        result = dataHandler.searchDatabase('20151120', '20151230')
 
 
-class RequestHandler():
-   # Search DB
-    def searchDatabase(self, startDate, endDate):
-        # Establish DB Connection
-        dbAdaptor = MongoDBConnect.MongoDBConnect()
-        # dbAdaptor.setDbAndCollection('stock', 'chart_data')
+        sort_on = "rate"
+        decorated = [(dict_[sort_on], dict_) for dict_ in result]
+        decorated.sort(reverse=True)
+        sortedResult = [dict_ for (key, dict_) in decorated]
 
-        # Get data from DB
-        dbAdaptor.setDbAndCollection('stock', 'companies')
-        companies = dbAdaptor.getData()
 
-        # Switch DB
-        dbAdaptor.setDbAndCollection('stock', 'chart_data')
+        # sortedResult = sorted(result, key=lambda k: k['rate'], reverse=True)
+        print 'load data done'
 
-        # Counter
-        index = 1
+        # Update UI
+        self.setListWidget(sortedResult)
 
-        resultList = []
+    def onNextButtonClicked(self):
+        print "onNextButtonClicked!"
+        nextIndex = self.ui.stackedWidget.currentIndex() + 1
+        self.ui.stackedWidget.setCurrentIndex(nextIndex)
 
-        # Load data from DB and search the result
-        for companyList in companies:
-            for shortCode in companyList:
+    def onBackButtonClicked(self):
+        print "onBackButtonClicked!"
+        previousIndex = self.ui.stackedWidget.currentIndex() - 1
+        self.ui.stackedWidget.setCurrentIndex(previousIndex)
 
-                # exclude those keys from send queue
-                if(shortCode == '_id' or shortCode == 'last_modified'):
-                    continue;
-                else:
-                    # Get record from shortCode
-                    result = dbAdaptor.findData(shortCode)
+    def onHomeButtonClicked(self):
+        print "onHomeButtonClicked!"
+        self.ui.stackedWidget.setCurrentIndex(0)
 
-                    for value in result:
-                        try:
-                            # Get start and end date
-                            start = value.get("week").get(startDate)
-                            end = value.get("week").get(endDate)
-                            companyName = value.get("company_name")
-                            delta = 1.0
+    def onItemSelected(self):
+        print ("onItemSelected: %d" % self.ui.listWidget.currentRow())
 
-                            if((start != None and end != None) and end > start):
-                                # Calculate delta for filter
-                                gap = (float(end - start)/float(start))
+    def setBackground(self):
+        print "setBackground"
 
-                                if(gap > delta):
+    def setListWidget(self, result):
 
-                                    company = {}
+        itemCount = 0
+        for item in result:
 
-                                    rate = "{:.0%}".format(gap)
-                                    print("[%d] %s, %s, start: %d, end: %d, delta: %s" % (index, companyName, shortCode, start, end, rate))
+            companyName = item["name"]
+            shortCode = item["shortCode"]
+            rate = item["rate"]
+            startPrice = item["startPrice"]
+            endPrice = item["endPrice"]
 
-                                    # Fill in the dictionary
-                                    company["name"] = companyName.encode('utf-8')
-                                    company["shortCode"] = str(shortCode)
-                                    company["startPrice"] = str(start)
-                                    company["endPrice"] = str(end)
-                                    company["rate"] = rate
+            # Create QCustomQWidget
+            myQCustomQWidget = QCustomQWidget()
+            myQCustomQWidget.setCompanyQLabel(companyName)
+            myQCustomQWidget.setShortCodeQLabel(shortCode)
+            myQCustomQWidget.setRateQLabel(str(rate) + '%')
+            myQCustomQWidget.setStartPriceQLabel(startPrice)
+            myQCustomQWidget.setEndPriceQLabel(endPrice)
 
-                                    weekValue = value.get("week")
+            # Create QListWidgetItem
+            myQListWidgetItem = QtGui.QListWidgetItem(self.ui.listWidget)
 
-                                    # Remove 'u' string in front of key
-                                    weekValue = ast.literal_eval(json.dumps(weekValue))
-                                    company["week"] = str(weekValue)
+            # Set size hint
+            myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
 
-                                    # fill in the list
-                                    resultList.append(company)
+            if itemCount % 2 == 1:
+                myQListWidgetItem.setBackgroundColor(QtGui.QColor.fromRgb(248,248,248,255))
 
-                                index += 1
-                        except:
-                            print("Exception] short code: %s" % shortCode)
+            # Add QListWidgetItem into QListWidget
+            self.ui.listWidget.addItem(myQListWidgetItem)
+            self.ui.listWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
+            itemCount += 1
 
-        return resultList
-    # def end
 
 if __name__ == "__main__":
     print("Start Finbot...")
+    # py.sign_in('pointe77', 'g8eyv8nzr1')
 
-    # test = HttpServer.MyHttpServer()
-    # test.start()
+    app = QtGui.QApplication(sys.argv)
+    w = MainWindow()
+    app.exec_()
 
-    requestHandler = RequestHandler()
-    result = requestHandler.searchDatabase('20151120', '20151230')
+    # requestHandler = RequestHandler()
+    # result = requestHandler.searchDatabase('20151120', '20151230')
 
-    for item in result:
-        # Retrieves data from list
-        companyName = item["name"]
-        weekData = item["week"]
-
-        weekData = weekData.replace("'", "\"")
-        weekData = weekData.replace(": ", ":\"")
-        weekData = weekData.replace(",", "\",")
-        weekData = weekData.replace("}", "\"}")
-
-        print "company :" + companyName
-        #print weekData
-
-        weekDataDict = {}
-        jsonWeekData = json.loads(weekData)
-
-        for key, value in (jsonWeekData.iteritems()):
-            date_object = datetime.strptime(key, '%Y%m%d')
-            weekDataDict[date_object] = value
-
-        break;
-
-    x_value = []
-    y_value = []
-    for key, value in sorted(weekDataDict.iteritems()):
-        x_value.append(key)
-        y_value.append(value)
+    # for item in result:
+    #     # Retrieves data from list
+    #     companyName = item["name"]
+    #     weekData = item["week"]
+    #
+    #     weekData = weekData.replace("'", "\"")
+    #     weekData = weekData.replace(": ", ":\"")
+    #     weekData = weekData.replace(",", "\",")
+    #     weekData = weekData.replace("}", "\"}")
+    #
+    #     print "company :" + companyName
+    #     #print weekData
+    #
+    #     weekDataDict = {}
+    #     jsonWeekData = json.loads(weekData)
+    #
+    #     for key, value in (jsonWeekData.iteritems()):
+    #         date_object = datetime.strptime(key, '%Y%m%d')
+    #         weekDataDict[date_object] = value
+    #
+    #     break;
+    #
+    # x_value = []
+    # y_value = []
+    # for key, value in sorted(weekDataDict.iteritems()):
+    #     x_value.append(key)
+    #     y_value.append(value)
         # print "key: " + str(key) + ", value: " + str(value)
 
-    plotly.offline.plot({
-        "data": [
-            Scatter(x=x_value, y=y_value)
-        ],
-        "layout": Layout(
-        title=companyName
-        )
-    },filename= item["shortCode"] + "_demo")
+    # plotly.offline.plot({
+    #     "data": [
+    #         Scatter(x=x_value, y=y_value)
+    #     ],
+    #     "layout": Layout(
+    #     title=companyName
+    #     )
+    # },filename= item["shortCode"] + "_demo")
 
+
+    # py.image.save_as({'data': Scatter(x=x_value, y=y_value)}, 'your_image_filename.png')
+
+    # trace = go.Scatter(
+    #     x = x_value,
+    #     y = y_value
+    # )
+    # data = [trace]
+    # layout = go.Layout(title='A Simple Plot', width=800, height=640)
+    # fig = go.Figure(data=data, layout=layout)
+    # py.image.save_as(fig, filename='a-simple-plot.png')
 # main end
 
 
