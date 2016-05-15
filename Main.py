@@ -13,10 +13,12 @@ import sys
 # from plotly.graph_objs import Scatter, Layout
 #import plotly.graph_objs as go
 
+import locale
 from PyQt4 import QtGui, QtCore
 from PyQt4 import uic
 from CustomWidget import QCustomQWidget
 from DataManager import DataHandler
+
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
@@ -104,8 +106,8 @@ class MainWindow(QtGui.QMainWindow):
             myQCustomQWidget.setCompanyQLabel(companyName)
             myQCustomQWidget.setShortCodeQLabel(shortCode)
             myQCustomQWidget.setRateQLabel(str(rate) + '%')
-            myQCustomQWidget.setStartPriceQLabel(startPrice)
-            myQCustomQWidget.setEndPriceQLabel(endPrice)
+            myQCustomQWidget.setStartPriceQLabel("Start price: " + locale.currency(int(startPrice), grouping=True))
+            myQCustomQWidget.setEndPriceQLabel("End price: " + locale.currency(int(endPrice), grouping=True))
 
             # Create QListWidgetItem
             myQListWidgetItem = QtGui.QListWidgetItem(self.ui.listWidget)
@@ -125,6 +127,9 @@ class MainWindow(QtGui.QMainWindow):
 if __name__ == "__main__":
     print("Start Finbot...")
     # py.sign_in('pointe77', 'g8eyv8nzr1')
+
+    # Set locale information
+    locale.setlocale(locale.LC_ALL, '')
 
     app = QtGui.QApplication(sys.argv)
     w = MainWindow()
