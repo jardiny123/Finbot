@@ -7,17 +7,17 @@ Created in 13/03/2016 SDG
 '''
 
 import sys
-#import plotly
-# import plotly.plotly as py
-# print plotly.__version__  # version >1.9.4 required
-# from plotly.graph_objs import Scatter, Layout
-#import plotly.graph_objs as go
-
 import locale
-from PyQt4 import QtGui, QtCore
+import plotly
+import plotly.plotly as py
+print "poltly version: " + plotly.__version__  # version >1.9.4 required
+
+from PyQt4 import QtGui
 from PyQt4 import uic
+
 from CustomWidget import QCustomQWidget
 from DataManager import DataHandler
+from DetailViewManager import StockData
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -28,19 +28,9 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.homeButton.hide()
 
         self.ui.searchButton.clicked.connect(self.onSearchButtonClicked)
-
         self.ui.listWidget.itemClicked.connect(self.onItemSelected)
-
-        # self.ui.next_2.clicked.connect(self.onNextButtonClicked)
-        # self.ui.next_3.clicked.connect(self.onNextButtonClicked)
-        #
-        # self.ui.back_2.clicked.connect(self.onBackButtonClicked)
-        # self.ui.back_3.clicked.connect(self.onBackButtonClicked)
-        # self.ui.back_4.clicked.connect(self.onBackButtonClicked)
-        #
-        # self.ui.home_2.clicked.connect(self.onHomeButtonClicked)
-        # self.ui.home_3.clicked.connect(self.onHomeButtonClicked)
-        # self.ui.home_4.clicked.connect(self.onHomeButtonClicked)
+        self.ui.backButton.clicked.connect(self.onBackButtonClicked)
+        self.ui.homeButton.clicked.connect(self.onHomeButtonClicked)
 
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.show()
@@ -54,21 +44,20 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.homeButton.show()
 
         # Retrieve stock information from DB
+        self.startDate = '20151120'
+        self.endDate = '20151230'
+
         dataHandler = DataHandler()
-        result = dataHandler.searchDatabase('20151120', '20151230')
+        result = dataHandler.searchDatabase(self.startDate, self.endDate)
 
-
+        # sorting data decreasing order
         sort_on = "rate"
         decorated = [(dict_[sort_on], dict_) for dict_ in result]
         decorated.sort(reverse=True)
-        sortedResult = [dict_ for (key, dict_) in decorated]
-
-
-        # sortedResult = sorted(result, key=lambda k: k['rate'], reverse=True)
-        print 'load data done'
+        self.sortedResult = [dict_ for (key, dict_) in decorated]
 
         # Update UI
-        self.setListWidget(sortedResult)
+        self.setListWidget(self.sortedResult)
 
     def onNextButtonClicked(self):
         print "onNextButtonClicked!"
@@ -85,7 +74,19 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(0)
 
     def onItemSelected(self):
-        print ("onItemSelected: %d" % self.ui.listWidget.currentRow())
+        selectedItemIndex = self.ui.listWidget.currentRow()
+        print ("onItemSelected - Data: %d" % selectedItemIndex)
+
+        # Draw chart
+        stockData = StockData()
+        stockData.drawChart(self.sortedResult[selectedItemIndex], self.startDate, self.endDate)
+
+        # Load chart data
+        chartImage = stockData.loadChartData(self.ui.imageLabel.size())
+        self.ui.imageLabel.setPixmap(chartImage)
+
+        nextIndex = self.ui.stackedWidget.currentIndex() + 1
+        self.ui.stackedWidget.setCurrentIndex(nextIndex)
 
     def setBackground(self):
         print "setBackground"
@@ -126,67 +127,15 @@ class MainWindow(QtGui.QMainWindow):
 
 if __name__ == "__main__":
     print("Start Finbot...")
-    # py.sign_in('pointe77', 'g8eyv8nzr1')
+    py.sign_in('pointe77', 'g8eyv8nzr1')
 
     # Set locale information
     locale.setlocale(locale.LC_ALL, '')
 
+    # Launch app
     app = QtGui.QApplication(sys.argv)
     w = MainWindow()
     app.exec_()
-
-    # requestHandler = RequestHandler()
-    # result = requestHandler.searchDatabase('20151120', '20151230')
-
-    # for item in result:
-    #     # Retrieves data from list
-    #     companyName = item["name"]
-    #     weekData = item["week"]
-    #
-    #     weekData = weekData.replace("'", "\"")
-    #     weekData = weekData.replace(": ", ":\"")
-    #     weekData = weekData.replace(",", "\",")
-    #     weekData = weekData.replace("}", "\"}")
-    #
-    #     print "company :" + companyName
-    #     #print weekData
-    #
-    #     weekDataDict = {}
-    #     jsonWeekData = json.loads(weekData)
-    #
-    #     for key, value in (jsonWeekData.iteritems()):
-    #         date_object = datetime.strptime(key, '%Y%m%d')
-    #         weekDataDict[date_object] = value
-    #
-    #     break;
-    #
-    # x_value = []
-    # y_value = []
-    # for key, value in sorted(weekDataDict.iteritems()):
-    #     x_value.append(key)
-    #     y_value.append(value)
-        # print "key: " + str(key) + ", value: " + str(value)
-
-    # plotly.offline.plot({
-    #     "data": [
-    #         Scatter(x=x_value, y=y_value)
-    #     ],
-    #     "layout": Layout(
-    #     title=companyName
-    #     )
-    # },filename= item["shortCode"] + "_demo")
-
-
-    # py.image.save_as({'data': Scatter(x=x_value, y=y_value)}, 'your_image_filename.png')
-
-    # trace = go.Scatter(
-    #     x = x_value,
-    #     y = y_value
-    # )
-    # data = [trace]
-    # layout = go.Layout(title='A Simple Plot', width=800, height=640)
-    # fig = go.Figure(data=data, layout=layout)
-    # py.image.save_as(fig, filename='a-simple-plot.png')
 # main end
 
 

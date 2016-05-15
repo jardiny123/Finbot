@@ -439,7 +439,7 @@
      </palette>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="page_1">
      <property name="autoFillBackground">
@@ -482,62 +482,17 @@
      </widget>
     </widget>
     <widget class="QWidget" name="page_3">
-     <widget class="QLabel" name="label_3">
+     <widget class="QLabel" name="imageLabel">
       <property name="geometry">
        <rect>
-        <x>650</x>
-        <y>420</y>
-        <width>250</width>
-        <height>70</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>20</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#5500ff;&quot;&gt;Page_3&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="next_3">
-      <property name="geometry">
-       <rect>
-        <x>670</x>
-        <y>630</y>
-        <width>168</width>
-        <height>51</height>
+        <x>10</x>
+        <y>10</y>
+        <width>800</width>
+        <height>480</height>
        </rect>
       </property>
       <property name="text">
-       <string>Next</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="back_3">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>40</y>
-        <width>168</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Back</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="home_3">
-      <property name="geometry">
-       <rect>
-        <x>1260</x>
-        <y>40</y>
-        <width>168</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Home</string>
+       <string>TextLabel</string>
       </property>
      </widget>
     </widget>

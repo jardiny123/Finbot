@@ -8,7 +8,6 @@ Created in 14/05/2016 SDG
 
 import MongoDBConnect
 import json, ast
-from datetime import datetime
 
 
 class DataHandler():
