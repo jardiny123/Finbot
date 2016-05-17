@@ -81,6 +81,12 @@ class MainWindow(QtGui.QMainWindow):
         stockData = StockData()
         stockData.drawChart(self.sortedResult[selectedItemIndex], self.startDate, self.endDate)
 
+        # Set Company information
+        self.ui.companyLabel.setText('Company: ' + stockData.getCompanyName() + ' (' +  stockData.getShortCode() + ')')
+        self.ui.startPriceLabel.setText('Start Price: ' + stockData.getStartPrice())
+        self.ui.endPriceLabel.setText('End Price: ' + stockData.getEndPrice())
+        self.ui.rateLabel.setText('Increased: ' + stockData.getRate())
+
         # Load chart data
         chartImage = stockData.loadChartData(self.ui.imageLabel.size())
         self.ui.imageLabel.setPixmap(chartImage)
@@ -123,7 +129,6 @@ class MainWindow(QtGui.QMainWindow):
             self.ui.listWidget.addItem(myQListWidgetItem)
             self.ui.listWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
             itemCount += 1
-
 
 if __name__ == "__main__":
     print("Start Finbot...")

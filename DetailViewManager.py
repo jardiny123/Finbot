@@ -7,6 +7,7 @@ Created in 15/05/2016 SDG
 '''
 
 import json
+import locale
 import plotly.plotly as py
 import plotly.graph_objs as go
 from datetime import datetime
@@ -16,6 +17,15 @@ from PyQt4 import QtGui, QtCore
 
 class StockData():
     chartFileName = 'simple_stock_plot.png'
+    companyName = None
+    shortCode = None
+    startPrice = None
+    endPrice = None
+    rate = None
+    weekData = None
+
+    startDate = None
+    endDate = None
 
     def drawChart(self, stockData, startDate = None, endDate = None):
         print ("ENTER drawChart")
@@ -28,16 +38,20 @@ class StockData():
         print ("end date: %s" % str(self.endDate))
 
         # Retrieves data from list
-        companyName = stockData["name"]
-        weekData = stockData["week"]
+        self.companyName = stockData["name"]
+        self.weekData = stockData["week"]
+        self.shortCode =stockData["shortCode"]
+        self.startPrice = stockData["startPrice"]
+        self.endPrice = stockData["endPrice"]
+        self.rate = stockData["rate"]
 
-        weekData = weekData.replace("'", "\"")
-        weekData = weekData.replace(": ", ":\"")
-        weekData = weekData.replace(",", "\",")
-        weekData = weekData.replace("}", "\"}")
+        self.weekData = self.weekData.replace("'", "\"")
+        self.weekData = self.weekData.replace(": ", ":\"")
+        self.weekData = self.weekData.replace(",", "\",")
+        self.weekData = self.weekData.replace("}", "\"}")
 
         weekDataDict = {}
-        jsonWeekData = json.loads(weekData)
+        jsonWeekData = json.loads(self.weekData)
 
         # Set key to year month date format
         for key, value in (jsonWeekData.iteritems()):
@@ -49,7 +63,7 @@ class StockData():
 
         # Draw chart
         trace = go.Scatter(x = x_value, y = y_value)
-        layout = go.Layout(title=companyName, width=800, height=480)
+        layout = go.Layout(title=self.companyName, width=800, height=480)
         fig = go.Figure(data=[trace], layout=layout)
         py.image.save_as(fig, filename=self.chartFileName)
         print "LEAVE drawChart"
@@ -75,3 +89,20 @@ class StockData():
 
         print "LEAVE filterDateForChart"
         return x_value, y_value
+
+    def getCompanyName(self):
+        codec = QtCore.QTextCodec.codecForName("UTF-8")
+        return codec.toUnicode(self.companyName)
+
+    def getShortCode(self):
+        return self.shortCode
+
+    def getStartPrice(self):
+        return locale.currency(int(self.startPrice), grouping=True)
+
+    def getEndPrice(self):
+        return locale.currency(int(self.endPrice), grouping=True)
+
+    def getRate(self):
+        return str(self.rate) + '%'
+
