@@ -7,64 +7,110 @@ Created in 14/05/2016 SDG
 '''
 
 from PyQt4 import QtGui, QtCore
+import Color
 
 
 class QCustomQWidget (QtGui.QWidget):
     def __init__ (self, parent = None):
         super(QCustomQWidget, self).__init__(parent)
 
-        # Set company name and delta value
-        self.textQVBoxLayout = QtGui.QVBoxLayout()
-        self.textCompanyQLabel = QtGui.QLabel()
-        self.textRateQLabel = QtGui.QLabel()
+        # For Company information
+        self.ComponyInfoVBoxLayout = QtGui.QVBoxLayout()
 
-        self.textQVBoxLayout.addWidget(self.textCompanyQLabel)
-        self.textQVBoxLayout.addWidget(self.textRateQLabel)
+        self.textCompanyName = QtGui.QLabel()
+        self.textShortCode = QtGui.QLabel()
 
-        # SEt start and and price
-        self.textQVBoxLayout2 = QtGui.QVBoxLayout()
-        self.textEndPriceQLabel = QtGui.QLabel()
-        self.textStartPriceQLabel = QtGui.QLabel()
+        self.ComponyInfoVBoxLayout.addWidget(self.textCompanyName)
+        self.ComponyInfoVBoxLayout.addWidget(self.textShortCode)
 
-        self.textQVBoxLayout2.addWidget(self.textEndPriceQLabel)
-        self.textQVBoxLayout2.addWidget(self.textStartPriceQLabel)
+        # Set financial info
+        self.dataVBoxLayout = QtGui.QVBoxLayout()
+        self.financialInfoHBoxLayout = QtGui.QHBoxLayout()
+
+        # Create field for financial info
+        self.textStartPriceLabel = QtGui.QLabel()
+        self.textEndPriceLabel = QtGui.QLabel()
+        self.textRateLabel = QtGui.QLabel()
+
+        self.textStartPriceValue = QtGui.QLabel()
+        self.textEndPriceValue = QtGui.QLabel()
+        self.textRateValue = QtGui.QLabel()
+
+        # Add fields in the box layout
+        self.financialInfoHBoxLayout.addWidget(self.textStartPriceLabel)
+        self.financialInfoHBoxLayout.addWidget(self.textStartPriceValue)
+
+        self.financialInfoHBoxLayout.addWidget(self.textEndPriceLabel)
+        self.financialInfoHBoxLayout.addWidget(self.textEndPriceValue)
+
+        self.financialInfoHBoxLayout.addWidget(self.textRateLabel)
+        self.financialInfoHBoxLayout.addWidget(self.textRateValue)
+
+        # Create field for description
+        self.textDescriptionValue = QtGui.QLabel()
+
+        # Set margin
+        self.financialInfoHBoxLayout.setContentsMargins(0,5,0,5)
+        self.textDescriptionValue.setContentsMargins(0,5,0,5)
+
+        # Add financial data and description
+        self.dataVBoxLayout.addLayout(self.financialInfoHBoxLayout, 0)
+        self.dataVBoxLayout.addWidget(self.textDescriptionValue)
+
 
         # Set short code
-        self.allQHBoxLayout = QtGui.QHBoxLayout()
-        self.textShortCodeQLabel = QtGui.QLabel()
+        self.searchResultHBoxLayout = QtGui.QHBoxLayout()
 
         # add everything in the box layout
-        self.allQHBoxLayout.addWidget(self.textShortCodeQLabel, 1)
-        self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 2)
-        self.allQHBoxLayout.addLayout(self.textQVBoxLayout2, 5)
+        self.searchResultHBoxLayout.addLayout(self.ComponyInfoVBoxLayout, 1)
+        self.searchResultHBoxLayout.addLayout(self.dataVBoxLayout, 4)
 
-        self.setLayout(self.allQHBoxLayout)
+        self.searchResultHBoxLayout.setContentsMargins(10, 30, 10, 30)
+
+        self.setLabelText()
         self.setLabelStyleSheet()
+        self.setLayout(self.searchResultHBoxLayout)
+
+    def setLabelText(self):
+        self.textStartPriceLabel.setText("START: ")
+        self.textStartPriceLabel.setFixedWidth(92)
+        self.textEndPriceLabel.setText("END: ")
+        self.textEndPriceLabel.setFixedWidth(65)
+        self.textRateLabel.setText("RATE: ")
+        self.textRateLabel.setFixedWidth(77)
 
     def setLabelStyleSheet(self):
-        self.textCompanyQLabel.setStyleSheet('''color: rgb(0, 0, 255);''')
-        self.textShortCodeQLabel.setStyleSheet('''color: rgb(255, 0, 0);''')
-        self.textRateQLabel.setStyleSheet('''color: rgb(255, 0, 0);''')
-        self.textEndPriceQLabel.setStyleSheet('''color: rgb(96, 96, 96);''')
-        self.textStartPriceQLabel.setStyleSheet('''color: rgb(96, 96, 96);''')
+        self.textCompanyName.setStyleSheet("color: " + Color.CYAN + "background-color: " + Color.LABEL_TRANSPARENT_BG + "font-size:32px;")
+        self.textShortCode.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.LABEL_TRANSPARENT_BG)
+
+        self.textStartPriceLabel.setStyleSheet("color: " + Color.RED + "background-color: " + Color.LABEL_TRANSPARENT_BG)
+        self.textEndPriceLabel.setStyleSheet("color: " + Color.RED + "background-color: " + Color.LABEL_TRANSPARENT_BG)
+        self.textRateLabel.setStyleSheet("color: " + Color.RED + "background-color: " + Color.LABEL_TRANSPARENT_BG)
+
+        self.textStartPriceValue.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.LABEL_TRANSPARENT_BG)
+        self.textEndPriceValue.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.LABEL_TRANSPARENT_BG)
+        self.textRateValue.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.LABEL_TRANSPARENT_BG)
+
+        self.textDescriptionValue.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.LABEL_TRANSPARENT_BG)
 
     def setCompanyQLabel (self, text):
         codec = QtCore.QTextCodec.codecForName("UTF-8")
         localeText = codec.toUnicode(text)
 
-        self.textCompanyQLabel.setText(localeText)
+        self.textCompanyName.setText(localeText)
 
-    def setShortCodeQLabel (self, text):
-        self.textShortCodeQLabel.setText(text)
+    def setDescriptionQLabel(self, text):
+        self.textDescriptionValue.setText(text)
 
-    def setRateQLabel(self, text):
-        self.textRateQLabel.setText(text)
+    def setStartPriceValue(self, text):
+        self.textStartPriceValue.setText(text)
 
-    def setStartPriceQLabel(self, text):
-        self.textStartPriceQLabel.setText(text)
+    def setEndPriceValue(self, text):
+        self.textEndPriceValue.setText(text)
 
-    def setEndPriceQLabel(self, text):
-        self.textEndPriceQLabel.setText(text)
+    def setRateValue(self, text):
+        self.textRateValue.setText(text)
 
-
+    def setShortCodeValue(self, text):
+        self.textShortCode.setText("(" + text + ")")
 

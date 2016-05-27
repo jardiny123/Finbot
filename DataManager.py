@@ -28,11 +28,9 @@ class DataHandler():
         index = 1
 
         resultList = []
-
         # Load data from DB and search the result
         for companyList in companies:
             for shortCode in companyList:
-
                 # exclude those keys from send queue
                 if(shortCode == '_id' or shortCode == 'last_modified'):
                     continue;
@@ -77,7 +75,7 @@ class DataHandler():
                                     # fill in the list
                                     resultList.append(company)
 
-                                index += 1
+                            index += 1
                         except:
                             print("Exception] short code: %s" % shortCode)
 

@@ -50,16 +50,16 @@ class StockData():
         self.weekData = self.weekData.replace(",", "\",")
         self.weekData = self.weekData.replace("}", "\"}")
 
-        weekDataDict = {}
+        self.weekDataDict = {}
         jsonWeekData = json.loads(self.weekData)
-
-        # Set key to year month date format
+        #
+        # # Set key to year month date format
         for key, value in (jsonWeekData.iteritems()):
             dateObject = datetime.strptime(key, '%Y%m%d')
-            weekDataDict[dateObject] = value
+            self.weekDataDict[dateObject] = value
 
         # Filter out data for drawing chart
-        x_value, y_value = self.filterChartData(weekDataDict)
+        x_value, y_value = self.filterChartData(self.weekDataDict)
 
         # Draw chart
         trace = go.Scatter(x = x_value, y = y_value)
@@ -83,7 +83,6 @@ class StockData():
 
         for key, value in sorted(weekDataDict.iteritems()):
             if key >= self.startDate and key <= self.endDate :
-                print key
                 x_value.append(key)
                 y_value.append(value)
 
@@ -91,8 +90,7 @@ class StockData():
         return x_value, y_value
 
     def getCompanyName(self):
-        codec = QtCore.QTextCodec.codecForName("UTF-8")
-        return codec.toUnicode(self.companyName)
+        return str(self.companyName)
 
     def getShortCode(self):
         return self.shortCode
@@ -106,3 +104,7 @@ class StockData():
     def getRate(self):
         return str(self.rate) + '%'
 
+    def getCurrentPrice(self):
+        sortedWeekData = sorted(self.weekDataDict.iteritems())
+        currentPrice = str(sortedWeekData[-1][1])
+        return locale.currency(int(currentPrice), grouping=True)
