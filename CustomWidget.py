@@ -49,12 +49,18 @@ class QCustomQWidget (QtGui.QWidget):
 
         self.descriptionHBoxLayout = QtGui.QHBoxLayout()
 
+
         # Create field for showing progress bar
+        self.correlationLabel = QtGui.QLabel()
         self.progressBar = QtGui.QProgressBar()
+
         self.progressBar.setRange (0, 100)
         self.progressBar.setValue(100)
+
+        self.descriptionHBoxLayout.addWidget(self.correlationLabel)
         self.descriptionHBoxLayout.addWidget(self.progressBar)
-        self.descriptionHBoxLayout.addSpacing(1700)
+
+        self.descriptionHBoxLayout.addSpacing(1600)
         self.progressBar.setContentsMargins(0,5,0,5)
 
         # Add financial data and description
@@ -81,6 +87,7 @@ class QCustomQWidget (QtGui.QWidget):
         self.textEndPriceLabel.setFixedWidth(65)
         self.textRateLabel.setText("RATE: ")
         self.textRateLabel.setFixedWidth(77)
+        self.correlationLabel.setText("Correlation: ")
 
     def setLabelStyleSheet(self):
         self.textCompanyName.setStyleSheet("color: " + Color.CYAN + "background-color: " + Color.LABEL_TRANSPARENT_BG + "font-size:32px;")
@@ -94,6 +101,7 @@ class QCustomQWidget (QtGui.QWidget):
         self.textEndPriceValue.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.LABEL_TRANSPARENT_BG)
         self.textRateValue.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.LABEL_TRANSPARENT_BG)
 
+        self.correlationLabel.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.LABEL_TRANSPARENT_BG)
         self.progressBar.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.LABEL_TRANSPARENT_BG)
 
     def setCompanyQLabel (self, text):
