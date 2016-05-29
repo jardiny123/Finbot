@@ -45,18 +45,21 @@ class QCustomQWidget (QtGui.QWidget):
 
         self.financialInfoHBoxLayout.addWidget(self.textRateLabel)
         self.financialInfoHBoxLayout.addWidget(self.textRateValue)
-
-        # Create field for description
-        self.textDescriptionValue = QtGui.QLabel()
-
-        # Set margin
         self.financialInfoHBoxLayout.setContentsMargins(0,5,0,5)
-        self.textDescriptionValue.setContentsMargins(0,5,0,5)
+
+        self.descriptionHBoxLayout = QtGui.QHBoxLayout()
+
+        # Create field for showing progress bar
+        self.progressBar = QtGui.QProgressBar()
+        self.progressBar.setRange (0, 100)
+        self.progressBar.setValue(100)
+        self.descriptionHBoxLayout.addWidget(self.progressBar)
+        self.descriptionHBoxLayout.addSpacing(1700)
+        self.progressBar.setContentsMargins(0,5,0,5)
 
         # Add financial data and description
         self.dataVBoxLayout.addLayout(self.financialInfoHBoxLayout, 0)
-        self.dataVBoxLayout.addWidget(self.textDescriptionValue)
-
+        self.dataVBoxLayout.addLayout(self.descriptionHBoxLayout, 0)
 
         # Set short code
         self.searchResultHBoxLayout = QtGui.QHBoxLayout()
@@ -91,7 +94,7 @@ class QCustomQWidget (QtGui.QWidget):
         self.textEndPriceValue.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.LABEL_TRANSPARENT_BG)
         self.textRateValue.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.LABEL_TRANSPARENT_BG)
 
-        self.textDescriptionValue.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.LABEL_TRANSPARENT_BG)
+        self.progressBar.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.LABEL_TRANSPARENT_BG)
 
     def setCompanyQLabel (self, text):
         codec = QtCore.QTextCodec.codecForName("UTF-8")
@@ -101,6 +104,9 @@ class QCustomQWidget (QtGui.QWidget):
 
     def setDescriptionQLabel(self, text):
         self.textDescriptionValue.setText(text)
+
+    def setProgressbarValue(self, value):
+        self.progressBar.setValue(value)
 
     def setStartPriceValue(self, text):
         self.textStartPriceValue.setText(text)

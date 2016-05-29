@@ -8,6 +8,7 @@ Created in 13/03/2016 SDG
 
 import sys
 import locale
+import math
 import urllib
 import plotly
 import plotly.plotly as py
@@ -27,9 +28,9 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.ui = uic.loadUi("StackedWidetForm.ui")
-        self.ui.backButton.setStyleSheet("color: " + Color.LIGHT_GRAY + "background-color: " + Color.BUTTON_BLUE)
-        self.ui.homeButton.setStyleSheet("color: " + Color.LIGHT_GRAY + "background-color: " + Color.BUTTON_BLUE)
-        self.ui.searchButton.setStyleSheet("color: " + Color.LIGHT_GRAY + "background-color: " + Color.BUTTON_BLUE)
+        self.ui.backButton.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.BUTTON_BLUE)
+        self.ui.homeButton.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.BUTTON_BLUE)
+        self.ui.searchButton.setStyleSheet("color: " + Color.WHITE + "background-color: " + Color.BUTTON_BLUE)
 
         self.ui.backButton.hide()
         self.ui.homeButton.hide()
@@ -39,12 +40,14 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.backButton.clicked.connect(self.onBackButtonClicked)
         self.ui.homeButton.clicked.connect(self.onHomeButtonClicked)
 
-        pixmap = QtGui.QPixmap('nerdwallet-logo-new.png')
-        self.ui.imageLabel_2.setPixmap(pixmap)
+        pixmap = QtGui.QPixmap('firstbuild-logo-2.jpg')
+        scaledPixmap = pixmap.scaled(self.ui.imageLabel_2.size(), QtCore.Qt.KeepAspectRatio)
+
+        self.ui.imageLabel_2.setPixmap(scaledPixmap)
         self.ui.imageLabel_2.raise_()
 
         self.ui.stackedWidget.setCurrentIndex(0)
-        self.ui.setStyleSheet("background-color: " + Color.DARK_NAVY)
+        self.ui.setStyleSheet("background-color: " + Color.WHITE)
 
         self.getLatestNews()
         self.ui.show()
@@ -59,15 +62,6 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.newsLabel_4.setText(d.entries[3].title)
         self.ui.newsLabel_5.setText(d.entries[4].title)
         self.ui.newsLabel_6.setText(d.entries[5].title)
-
-        self.ui.newsLabel_1.setStyleSheet("color: " + Color.WHITE)
-        self.ui.newsLabel_2.setStyleSheet("color: " + Color.WHITE)
-        self.ui.newsLabel_3.setStyleSheet("color: " + Color.WHITE)
-        self.ui.newsLabel_4.setStyleSheet("color: " + Color.WHITE)
-        self.ui.newsLabel_5.setStyleSheet("color: " + Color.WHITE)
-        self.ui.newsLabel_6.setStyleSheet("color: " + Color.WHITE)
-
-        self.ui.groupBox_2.setStyleSheet("color: " + Color.LIGHT_GRAY)
 
     def onSearchButtonClicked(self):
         print "onSearchButtonClicked"
@@ -179,7 +173,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def setListWidget(self, result):
 
+        correlationValue = 90
         itemCount = 0
+
         for item in result:
 
             companyName = item["name"]
@@ -196,9 +192,13 @@ class MainWindow(QtGui.QMainWindow):
             myQCustomQWidget.setRateValue(str(rate) + '%')
             myQCustomQWidget.setShortCodeValue(shortCode)
 
-            codec = QtCore.QTextCodec.codecForName("UTF-8")
-            description = codec.toUnicode("코이즈 써니전자 조일알미늄 서원 SDN 케엔씨글로벌")
-            myQCustomQWidget.setDescriptionQLabel(description)
+            # codec = QtCore.QTextCodec.codecForName("UTF-8")
+            # description = codec.toUnicode("코이즈 써니전자 조일알미늄 서원 SDN 케엔씨글로벌")
+            # myQCustomQWidget.setDescriptionQLabel(description)
+
+            x = (itemCount+2) * (itemCount+2) * (itemCount+2) * (itemCount+2)
+            result = correlationValue - math.log(x, 2)
+            myQCustomQWidget.setProgressbarValue(result)
 
             # Create QListWidgetItem
             myQListWidgetItem = QtGui.QListWidgetItem(self.ui.listWidget)

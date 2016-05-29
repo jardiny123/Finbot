@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1487</width>
-    <height>954</height>
+    <width>2560</width>
+    <height>1440</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
      <rect>
       <x>20</x>
       <y>100</y>
-      <width>1450</width>
-      <height>830</height>
+      <width>2520</width>
+      <height>1335</height>
      </rect>
     </property>
     <property name="palette">
@@ -439,7 +439,7 @@
      </palette>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="page_1">
      <property name="autoFillBackground">
@@ -448,10 +448,10 @@
      <widget class="QPushButton" name="searchButton">
       <property name="geometry">
        <rect>
-        <x>1170</x>
-        <y>150</y>
+        <x>1720</x>
+        <y>400</y>
         <width>168</width>
-        <height>51</height>
+        <height>60</height>
        </rect>
       </property>
       <property name="text">
@@ -461,9 +461,9 @@
      <widget class="QGroupBox" name="groupBox_2">
       <property name="geometry">
        <rect>
-        <x>200</x>
-        <y>300</y>
-        <width>1050</width>
+        <x>650</x>
+        <y>600</y>
+        <width>1200</width>
         <height>400</height>
        </rect>
       </property>
@@ -552,20 +552,20 @@
      <widget class="QLineEdit" name="lineEdit">
       <property name="geometry">
        <rect>
-        <x>100</x>
-        <y>150</y>
-        <width>1050</width>
-        <height>50</height>
+        <x>610</x>
+        <y>400</y>
+        <width>1100</width>
+        <height>60</height>
        </rect>
       </property>
      </widget>
      <widget class="QLabel" name="imageLabel_2">
       <property name="geometry">
        <rect>
-        <x>560</x>
-        <y>0</y>
-        <width>330</width>
-        <height>54</height>
+        <x>880</x>
+        <y>100</y>
+        <width>800</width>
+        <height>203</height>
        </rect>
       </property>
       <property name="text">
@@ -579,8 +579,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>1450</width>
-        <height>830</height>
+        <width>2520</width>
+        <height>1330</height>
        </rect>
       </property>
      </widget>
@@ -1211,13 +1211,13 @@
      <rect>
       <x>20</x>
       <y>20</y>
-      <width>1451</width>
+      <width>2646</width>
       <height>80</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
      <property name="spacing">
-      <number>1100</number>
+      <number>2170</number>
      </property>
      <property name="sizeConstraint">
       <enum>QLayout::SetFixedSize</enum>
@@ -1230,6 +1230,12 @@
        <property name="enabled">
         <bool>true</bool>
        </property>
+       <property name="maximumSize">
+        <size>
+         <width>200</width>
+         <height>50</height>
+        </size>
+       </property>
        <property name="text">
         <string>Back</string>
        </property>
@@ -1237,6 +1243,12 @@
      </item>
      <item>
       <widget class="QPushButton" name="homeButton">
+       <property name="maximumSize">
+        <size>
+         <width>200</width>
+         <height>50</height>
+        </size>
+       </property>
        <property name="text">
         <string>Home</string>
        </property>
